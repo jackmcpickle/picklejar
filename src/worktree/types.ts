@@ -1,7 +1,7 @@
 export interface WorktreeInfo {
-  path: string
-  branch: string
-  agentId: string
-  taskId: string
-  createdAt: number
+    path: string;
+    branch: string;
+    agentId: string;
+    taskId: string;
+    createdAt: number;
 }

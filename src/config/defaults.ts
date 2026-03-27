@@ -1,31 +1,31 @@
-import type { PicklejarConfig } from './schema.js'
+import type { PicklejarConfig } from './schema.js';
 
 export const defaultConfig: PicklejarConfig = {
-  agents: {
-    coordinator: {
-      model: 'anthropic/claude-opus-4-6',
-      maxSteps: 50,
+    agents: {
+        coordinator: {
+            model: 'anthropic/claude-opus-4-6',
+            maxSteps: 50,
+        },
+        discovery: {
+            model: 'anthropic/claude-sonnet-4-6',
+            count: 2,
+            maxSteps: 30,
+        },
+        implementation: {
+            model: 'openai/o3',
+            count: 3,
+            maxSteps: 40,
+        },
     },
-    discovery: {
-      model: 'anthropic/claude-sonnet-4-6',
-      count: 2,
-      maxSteps: 30,
+    providers: {
+        anthropic: { apiKeyEnv: 'ANTHROPIC_API_KEY' },
+        openai: { apiKeyEnv: 'OPENAI_API_KEY' },
     },
-    implementation: {
-      model: 'openai/o3',
-      count: 3,
-      maxSteps: 40,
+    memory: {
+        storage: 'libsql',
+        observationalMemory: true,
     },
-  },
-  providers: {
-    anthropic: { apiKeyEnv: 'ANTHROPIC_API_KEY' },
-    openai: { apiKeyEnv: 'OPENAI_API_KEY' },
-  },
-  memory: {
-    storage: 'libsql',
-    observationalMemory: true,
-  },
-  server: {
-    port: 4111,
-  },
-}
+    server: {
+        port: 4111,
+    },
+};

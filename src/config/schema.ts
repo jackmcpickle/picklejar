@@ -1,40 +1,49 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 const agentConfigSchema = z.object({
-  model: z.string().regex(/^[\w-]+\/[\w.-]+$/, 'Model must be in provider/model-name format'),
-  maxSteps: z.number().int().min(1).max(200).default(50),
-})
+    model: z
+        .string()
+        .regex(
+            /^[\w-]+\/[\w.-]+$/,
+            'Model must be in provider/model-name format',
+        ),
+    maxSteps: z.number().int().min(1).max(200).default(50),
+});
 
 const discoveryConfigSchema = agentConfigSchema.extend({
-  count: z.number().int().min(1).max(3).default(2),
-  maxSteps: z.number().int().min(1).max(100).default(30),
-})
+    count: z.number().int().min(1).max(3).default(2),
+    maxSteps: z.number().int().min(1).max(100).default(30),
+});
 
 const implementationConfigSchema = agentConfigSchema.extend({
-  count: z.number().int().min(1).max(5).default(3),
-  maxSteps: z.number().int().min(1).max(100).default(40),
-})
+    count: z.number().int().min(1).max(5).default(3),
+    maxSteps: z.number().int().min(1).max(100).default(40),
+});
 
 const providerConfigSchema = z.object({
-  apiKeyEnv: z.string().optional(),
-  baseUrl: z.string().url().optional(),
-})
+    apiKeyEnv: z.string().optional(),
+    baseUrl: z.string().url().optional(),
+});
 
 export const picklejarConfigSchema = z.object({
-  $schema: z.string().optional(),
-  agents: z.object({
-    coordinator: agentConfigSchema,
-    discovery: discoveryConfigSchema,
-    implementation: implementationConfigSchema,
-  }),
-  providers: z.record(z.string(), providerConfigSchema).default({}),
-  memory: z.object({
-    storage: z.enum(['libsql', 'postgres']).default('libsql'),
-    observationalMemory: z.boolean().default(true),
-  }).default({}),
-  server: z.object({
-    port: z.number().int().min(1024).max(65535).default(4111),
-  }).default({}),
-})
+    $schema: z.string().optional(),
+    agents: z.object({
+        coordinator: agentConfigSchema,
+        discovery: discoveryConfigSchema,
+        implementation: implementationConfigSchema,
+    }),
+    providers: z.record(z.string(), providerConfigSchema).default({}),
+    memory: z
+        .object({
+            storage: z.enum(['libsql', 'postgres']).default('libsql'),
+            observationalMemory: z.boolean().default(true),
+        })
+        .default({}),
+    server: z
+        .object({
+            port: z.number().int().min(1024).max(65535).default(4111),
+        })
+        .default({}),
+});
 
-export type PicklejarConfig = z.infer<typeof picklejarConfigSchema>
+export type PicklejarConfig = z.infer<typeof picklejarConfigSchema>;

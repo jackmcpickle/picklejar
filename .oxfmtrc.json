@@ -28,11 +28,8 @@
             ["sibling", "type-sibling"],
             ["index", "type-index"]
         ],
-        "newlinesBetween": false,
+        "newlinesBetween": false
     },
     "sortPackageJson": true,
-    "ignorePatterns": [
-        "dist/**",
-        "node_modules/**",
-    ]
+    "ignorePatterns": ["dist/**", "node_modules/**"]
 }

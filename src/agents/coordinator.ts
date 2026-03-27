@@ -1,33 +1,38 @@
-import { Agent } from '@mastra/core/agent'
-import { Memory } from '@mastra/memory'
-import { getConfig } from '../config/loader.js'
-import { createSubtask, updateTaskStatus, reportCompletion } from '../tools/index.js'
-import { createDiscoveryAgents } from './discovery.js'
-import { createImplementationAgents } from './implementation.js'
+import { Agent } from '@mastra/core/agent';
+import { Memory } from '@mastra/memory';
+import { getConfig } from '../config/loader.js';
+import {
+    createSubtask,
+    updateTaskStatus,
+    reportCompletion,
+} from '../tools/index.js';
+import { createDiscoveryAgents } from './discovery.js';
+import { createImplementationAgents } from './implementation.js';
 
 export function createCoordinator(): {
-  coordinator: Agent
-  discoveryAgents: Agent[]
-  implementationAgents: Agent[]
+    coordinator: Agent;
+    discoveryAgents: Agent[];
+    implementationAgents: Agent[];
 } {
-  const config = getConfig()
-  const discoveryAgents = createDiscoveryAgents()
-  const implementationAgents = createImplementationAgents()
+    const config = getConfig();
+    const discoveryAgents = createDiscoveryAgents();
+    const implementationAgents = createImplementationAgents();
 
-  // Build agents record from arrays
-  const agentsRecord: Record<string, Agent> = {}
-  for (const agent of discoveryAgents) {
-    agentsRecord[agent.id!] = agent
-  }
-  for (const agent of implementationAgents) {
-    agentsRecord[agent.id!] = agent
-  }
+    // Build agents record from arrays
+    const agentsRecord: Record<string, Agent> = {};
+    for (const agent of discoveryAgents) {
+        agentsRecord[agent.id!] = agent;
+    }
+    for (const agent of implementationAgents) {
+        agentsRecord[agent.id!] = agent;
+    }
 
-  const coordinator = new Agent({
-    id: 'coordinator',
-    name: 'Coordinator',
-    description: 'High-level orchestrator that breaks down coding tasks and delegates to specialized agents.',
-    instructions: `You are the Coordinator, the lead architect orchestrating complex coding tasks.
+    const coordinator = new Agent({
+        id: 'coordinator',
+        name: 'Coordinator',
+        description:
+            'High-level orchestrator that breaks down coding tasks and delegates to specialized agents.',
+        instructions: `You are the Coordinator, the lead architect orchestrating complex coding tasks.
 
 Your responsibilities:
 1. Receive coding tasks from the user
@@ -53,19 +58,19 @@ Guidelines:
 - Assign one subtask per agent at a time
 - Monitor progress and handle failures gracefully
 - Provide a final summary when the task is complete`,
-    model: config.agents.coordinator.model,
-    agents: agentsRecord,
-    tools: { createSubtask, updateTaskStatus, reportCompletion },
-    memory: new Memory({
-      options: {
-        lastMessages: 40,
-        observationalMemory: config.memory.observationalMemory,
-      },
-    }),
-    defaultOptions: {
-      maxSteps: config.agents.coordinator.maxSteps,
-    },
-  })
+        model: config.agents.coordinator.model,
+        agents: agentsRecord,
+        tools: { createSubtask, updateTaskStatus, reportCompletion },
+        memory: new Memory({
+            options: {
+                lastMessages: 40,
+                observationalMemory: config.memory.observationalMemory,
+            },
+        }),
+        defaultOptions: {
+            maxSteps: config.agents.coordinator.maxSteps,
+        },
+    });
 
-  return { coordinator, discoveryAgents, implementationAgents }
+    return { coordinator, discoveryAgents, implementationAgents };
 }
