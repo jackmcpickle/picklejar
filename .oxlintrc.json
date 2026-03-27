@@ -102,5 +102,5 @@
         "jsx-a11y",
         "react-perf"
     ],
-    "ignorePatterns": ["node_modules/", "build/", "dist/", "vite.config.ts"]
+    "ignorePatterns": ["node_modules/", "build/", "dist/", "tsdown.config.ts"]
 }

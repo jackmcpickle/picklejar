@@ -10,6 +10,7 @@
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
     "scripts": {
+        "prepare": "husky",
         "dev": "mastra dev",
         "build": "tsdown",
         "start": "node dist/cli.mjs start",
@@ -35,12 +36,18 @@
     },
     "devDependencies": {
         "@types/node": "^25.5.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.3.2",
         "oxfmt": "^0.42.0",
         "oxlint": "^1.57.0",
         "oxlint-tsgolint": "^0.18.1",
         "tsdown": "^0.21.6",
         "typescript": "^6.0.2",
         "vitest": "^4.1.2"
+    },
+    "lint-staged": {
+        "**/*.{js,jsx,ts,tsx,json,css,scss,md,mdx,yml,yaml}": "oxfmt --write --no-error-on-unmatched-pattern",
+        "src/**/*.{js,jsx,ts,tsx}": "oxlint --type-aware --type-check --fix --quiet"
     },
     "engines": {
         "node": ">=24.0.0"
