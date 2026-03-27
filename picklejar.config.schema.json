@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Picklejar Configuration",
+  "description": "Configuration for the Picklejar AI coding agent orchestration tool",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "agents": {
+      "type": "object",
+      "properties": {
+        "coordinator": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string",
+              "description": "Model identifier in provider/model-name format",
+              "default": "anthropic/claude-opus-4-6"
+            },
+            "maxSteps": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          "required": ["model"]
+        },
+        "discovery": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string",
+              "default": "anthropic/claude-sonnet-4-6"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3,
+              "default": 2
+            },
+            "maxSteps": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            }
+          },
+          "required": ["model"]
+        },
+        "implementation": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string",
+              "default": "openai/o3"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "default": 3
+            },
+            "maxSteps": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 40
+            }
+          },
+          "required": ["model"]
+        }
+      },
+      "required": ["coordinator", "discovery", "implementation"]
+    },
+    "providers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "apiKeyEnv": {
+            "type": "string",
+            "description": "Environment variable name containing the API key"
+          },
+          "baseUrl": {
+            "type": "string",
+            "description": "Custom base URL for the provider"
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "properties": {
+        "storage": {
+          "type": "string",
+          "enum": ["libsql", "postgres"],
+          "default": "libsql"
+        },
+        "observationalMemory": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "server": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535,
+          "default": 4111
+        }
+      }
+    }
+  },
+  "required": ["agents"]
+}
