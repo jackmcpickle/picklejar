@@ -9,7 +9,8 @@ export function createTask(
     type: Task['type'],
     parentId: string | null = null,
 ): Task {
-    const id = `task-${nextId++}`;
+    nextId += 1;
+    const id = `task-${nextId}`;
     const now = Date.now();
     const task: Task = {
         id,
@@ -86,7 +87,7 @@ export function onTaskEvent(listener: TaskEventListener): () => void {
     };
 }
 
-function emitTaskEvent(taskId: string, event: string) {
+function emitTaskEvent(taskId: string, event: string): void {
     const task = tasks.get(taskId);
     if (task) {
         for (const listener of listeners) {

@@ -149,7 +149,14 @@ export const grepSearch = createTool({
         if (result.stdout) {
             for (const line of result.stdout.split('\n').filter(Boolean)) {
                 try {
-                    const parsed = JSON.parse(line);
+                    const parsed = JSON.parse(line) as {
+                        type: string;
+                        data: {
+                            path: { text: string };
+                            line_number: number;
+                            lines: { text: string };
+                        };
+                    };
                     if (parsed.type === 'match') {
                         matches.push({
                             file: parsed.data.path.text,

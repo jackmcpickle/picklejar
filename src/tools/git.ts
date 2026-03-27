@@ -2,7 +2,7 @@ import { createTool } from '@mastra/core/tools';
 import { execa } from 'execa';
 import { z } from 'zod';
 
-async function git(args: string[], cwd?: string) {
+async function git(args: string[], cwd?: string): Promise<string> {
     const result = await execa('git', args, { cwd, reject: false });
     if (result.exitCode !== 0 && result.stderr) {
         throw new Error(`git ${args[0]} failed: ${result.stderr}`);
@@ -123,6 +123,8 @@ export const gitWorktree = createTool({
                 const listResult = await git(['worktree', 'list'], cwd);
                 return { result: listResult };
             }
+            default:
+                throw new Error(`Unknown worktree action: ${action as string}`);
         }
     },
 });

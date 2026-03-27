@@ -9,6 +9,12 @@
     "type": "module",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
+    "imports": {
+        "#config/*.js": "./src/config/*.js",
+        "#tools/*.js": "./src/tools/*.js",
+        "#tasks/*.js": "./src/tasks/*.js",
+        "#worktree/*.js": "./src/worktree/*.js"
+    },
     "scripts": {
         "prepare": "husky",
         "dev": "mastra dev",
@@ -16,7 +22,7 @@
         "start": "node dist/cli.mjs start",
         "test": "vitest",
         "typecheck": "oxlint --type-aware --type-check",
-        "lint:fix": "oxlint --type-aware --type-check --fix",
+        "lint": "oxlint --type-aware --type-check --fix",
         "fmt": "oxfmt",
         "fmt:check": "oxfmt --check"
     },

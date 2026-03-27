@@ -3,9 +3,16 @@ import type { Agent } from '@mastra/core/agent';
 import { LibSQLStore } from '@mastra/libsql';
 import { createCoordinator } from './agents/coordinator.js';
 import { loadConfig } from './config/loader.js';
+import type { PicklejarConfig } from './config/schema.js';
 import { apiRoutes } from './server/routes.js';
 
-export function createPicklejar(configPath?: string) {
+export function createPicklejar(configPath?: string): {
+    mastra: Mastra;
+    config: PicklejarConfig;
+    coordinator: Agent;
+    discoveryAgents: Agent[];
+    implementationAgents: Agent[];
+} {
     const config = loadConfig(configPath);
     const { coordinator, discoveryAgents, implementationAgents } =
         createCoordinator();

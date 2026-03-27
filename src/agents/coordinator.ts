@@ -1,11 +1,11 @@
-import { Agent } from '@mastra/core/agent';
-import { Memory } from '@mastra/memory';
-import { getConfig } from '../config/loader.js';
+import { getConfig } from '#config/loader.js';
 import {
     createSubtask,
     updateTaskStatus,
     reportCompletion,
-} from '../tools/index.js';
+} from '#tools/index.js';
+import { Agent } from '@mastra/core/agent';
+import { Memory } from '@mastra/memory';
 import { createDiscoveryAgents } from './discovery.js';
 import { createImplementationAgents } from './implementation.js';
 
@@ -21,10 +21,10 @@ export function createCoordinator(): {
     // Build agents record from arrays
     const agentsRecord: Record<string, Agent> = {};
     for (const agent of discoveryAgents) {
-        agentsRecord[agent.id!] = agent;
+        agentsRecord[agent.id] = agent;
     }
     for (const agent of implementationAgents) {
-        agentsRecord[agent.id!] = agent;
+        agentsRecord[agent.id] = agent;
     }
 
     const coordinator = new Agent({

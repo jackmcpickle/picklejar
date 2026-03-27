@@ -1,6 +1,4 @@
-import { Agent } from '@mastra/core/agent';
-import { Memory } from '@mastra/memory';
-import { getConfig } from '../config/loader.js';
+import { getConfig } from '#config/loader.js';
 import {
     readFile,
     writeFile,
@@ -13,7 +11,9 @@ import {
     gitWorktree,
     gitStatus,
     gitDiff,
-} from '../tools/index.js';
+} from '#tools/index.js';
+import { Agent } from '@mastra/core/agent';
+import { Memory } from '@mastra/memory';
 
 export function createImplementationAgent(index: number): Agent {
     const config = getConfig();

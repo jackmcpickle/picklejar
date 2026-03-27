@@ -1,11 +1,12 @@
 {
     "rules": {
         "require-await": "off",
+        "typescript/require-await": "off",
         "no-warning-comments": "off",
         "no-console": [
             "warn",
             {
-                "allow": ["warn", "error"]
+                "allow": ["log", "warn", "error"]
             }
         ],
         "no-void": [

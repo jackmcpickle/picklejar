@@ -1,14 +1,13 @@
+import * as taskManager from '#tasks/manager.js';
+import { getActiveWorktrees } from '#worktree/manager.js';
 import { registerApiRoute } from '@mastra/core/server';
-import type { Context } from 'hono';
-import * as taskManager from '../tasks/manager.js';
-import { getActiveWorktrees } from '../worktree/manager.js';
 
 // Note: paths must NOT start with /api (reserved by Mastra)
 // These routes will be available at /tasks, /tasks/list, etc.
 
 export const taskCreateRoute = registerApiRoute('/tasks', {
     method: 'POST',
-    handler: async (c: Context) => {
+    handler: async (c) => {
         const body = (await c.req.json()) as {
             title: string;
             description: string;
@@ -18,9 +17,7 @@ export const taskCreateRoute = registerApiRoute('/tasks', {
         // Get the Mastra instance to trigger the coordinator
         const mastra = c.get('mastra' as never) as
             | {
-                  getAgent: (
-                      id: string,
-                  ) =>
+                  getAgent: (id: string) =>
                       | {
                             generate: (
                                 prompt: string,
@@ -59,7 +56,7 @@ export const taskCreateRoute = registerApiRoute('/tasks', {
 
 export const taskListRoute = registerApiRoute('/tasks/list', {
     method: 'GET',
-    handler: async (c: Context) => {
+    handler: async (c) => {
         const tasks = taskManager.getAllTasks();
         return c.json({ tasks, count: tasks.length });
     },
@@ -67,7 +64,7 @@ export const taskListRoute = registerApiRoute('/tasks/list', {
 
 export const taskDetailRoute = registerApiRoute('/tasks/:id', {
     method: 'GET',
-    handler: async (c: Context) => {
+    handler: async (c) => {
         const id = c.req.param('id');
         if (!id) return c.json({ error: 'Task ID required' }, 400);
         try {
@@ -81,7 +78,7 @@ export const taskDetailRoute = registerApiRoute('/tasks/:id', {
 
 export const taskStreamRoute = registerApiRoute('/tasks/:id/stream', {
     method: 'GET',
-    handler: async (c: Context) => {
+    handler: async (c) => {
         const id = c.req.param('id');
         if (!id) return c.json({ error: 'Task ID required' }, 400);
 
@@ -132,7 +129,7 @@ export const taskStreamRoute = registerApiRoute('/tasks/:id/stream', {
 
 export const agentStatusRoute = registerApiRoute('/agents/status', {
     method: 'GET',
-    handler: async (c: Context) => {
+    handler: async (c) => {
         const worktrees = getActiveWorktrees();
         return c.json({ worktrees });
     },
@@ -140,7 +137,7 @@ export const agentStatusRoute = registerApiRoute('/agents/status', {
 
 export const healthRoute = registerApiRoute('/health', {
     method: 'GET',
-    handler: async (c: Context) => {
+    handler: async (c) => {
         return c.json({ status: 'ok', uptime: process.uptime() });
     },
 });

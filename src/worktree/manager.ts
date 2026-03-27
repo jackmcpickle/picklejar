@@ -47,7 +47,7 @@ export async function removeWorktree(taskId: string): Promise<void> {
 
 export async function mergeWorktree(
     taskId: string,
-    targetBranch: string = 'main',
+    _targetBranch: string = 'main',
 ): Promise<string> {
     const info = activeWorktrees.get(taskId);
     if (!info) throw new Error(`No worktree for task ${taskId}`);

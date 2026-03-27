@@ -19,9 +19,7 @@ async function isRtkAvailable(): Promise<boolean> {
 let _rtkAvailable: boolean | null = null;
 
 async function getRtkAvailable(): Promise<boolean> {
-    if (_rtkAvailable === null) {
-        _rtkAvailable = await isRtkAvailable();
-    }
+    _rtkAvailable ??= await isRtkAvailable();
     return _rtkAvailable;
 }
 

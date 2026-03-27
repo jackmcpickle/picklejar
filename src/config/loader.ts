@@ -14,7 +14,7 @@ export function loadConfig(configPath?: string): PicklejarConfig {
         return _config;
     }
 
-    const raw = JSON.parse(readFileSync(filePath, 'utf-8'));
+    const raw: unknown = JSON.parse(readFileSync(filePath, 'utf-8'));
     const result = picklejarConfigSchema.safeParse(raw);
 
     if (!result.success) {

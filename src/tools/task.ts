@@ -1,6 +1,6 @@
+import * as taskManager from '#tasks/manager.js';
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
-import * as taskManager from '../tasks/manager.js';
 
 export const createSubtask = createTool({
     id: 'create-subtask',

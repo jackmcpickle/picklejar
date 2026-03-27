@@ -17,7 +17,7 @@ program
     .description('Launch picklejar server with Mastra Studio')
     .option('-p, --port <number>', 'Server port', '4111')
     .option('-c, --config <path>', 'Config file path', 'picklejar.config.json')
-    .action(async (opts) => {
+    .action(async (opts: { port: string; config: string }) => {
         console.log(
             pc.bold(pc.green('\n🥒 Picklejar - AI Agent Orchestration\n')),
         );
@@ -90,7 +90,7 @@ program
     .command('task <description>')
     .description('Submit a coding task to the coordinator')
     .option('-p, --port <number>', 'Server port', '4111')
-    .action(async (description, opts) => {
+    .action(async (description: string, opts: { port: string }) => {
         const url = `http://localhost:${opts.port}/api/tasks`;
 
         try {
@@ -120,7 +120,7 @@ program
                     `\n  Stream progress: curl http://localhost:${opts.port}/api/tasks/${task.id}/stream`,
                 ),
             );
-        } catch (err) {
+        } catch {
             console.error(
                 pc.red('Could not connect to picklejar server. Is it running?'),
             );
@@ -133,7 +133,7 @@ program
     .command('status')
     .description('Show status of all tasks')
     .option('-p, --port <number>', 'Server port', '4111')
-    .action(async (opts) => {
+    .action(async (opts: { port: string }) => {
         try {
             const response = await fetch(
                 `http://localhost:${opts.port}/api/tasks`,
@@ -190,7 +190,9 @@ program
 
         // Write default config
         const configPath = resolve('picklejar.config.json');
-        if (!existsSync(configPath)) {
+        if (existsSync(configPath)) {
+            console.log(pc.dim('  picklejar.config.json already exists'));
+        } else {
             writeFileSync(
                 configPath,
                 JSON.stringify(
@@ -203,8 +205,6 @@ program
                 ),
             );
             console.log(pc.green('  Created picklejar.config.json'));
-        } else {
-            console.log(pc.dim('  picklejar.config.json already exists'));
         }
 
         // Write .env.example

@@ -22,7 +22,7 @@ const implementationConfigSchema = agentConfigSchema.extend({
 
 const providerConfigSchema = z.object({
     apiKeyEnv: z.string().optional(),
-    baseUrl: z.string().url().optional(),
+    baseUrl: z.url().optional(),
 });
 
 export const picklejarConfigSchema = z.object({
@@ -38,12 +38,12 @@ export const picklejarConfigSchema = z.object({
             storage: z.enum(['libsql', 'postgres']).default('libsql'),
             observationalMemory: z.boolean().default(true),
         })
-        .default({}),
+        .default({ storage: 'libsql', observationalMemory: true }),
     server: z
         .object({
             port: z.number().int().min(1024).max(65535).default(4111),
         })
-        .default({}),
+        .default({ port: 4111 }),
 });
 
 export type PicklejarConfig = z.infer<typeof picklejarConfigSchema>;
