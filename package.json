@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "description": "AI coding agent orchestration tool powered by Mastra AI",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "bin": {
-    "picklejar": "./dist/cli.js"
+    "picklejar": "./dist/cli.mjs"
   },
   "scripts": {
     "dev": "mastra dev",
-    "build": "tsup",
-    "start": "node dist/cli.js start",
+    "build": "tsdown",
+    "start": "node dist/cli.mjs start",
     "test": "vitest",
     "typecheck": "oxlint --type-aware --type-check",
     "lint:fix": "oxlint --type-aware --type-check --fix",
@@ -40,7 +40,7 @@
     "oxfmt": "^0.42.0",
     "oxlint": "^1.57.0",
     "oxlint-tsgolint": "^0.18.1",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.21.6",
     "typescript": "^6.0.2",
     "vitest": "^4.1.2"
   },
