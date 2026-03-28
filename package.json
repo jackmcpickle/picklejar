@@ -1,5 +1,5 @@
 {
-  "name": "picklejar",
+  "name": "@pickle-ai/cli",
   "version": "0.1.0",
   "description": "AI coding agent orchestration tool powered by Mastra AI",
   "type": "module",
