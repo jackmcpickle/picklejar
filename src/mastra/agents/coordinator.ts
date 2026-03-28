@@ -1,11 +1,11 @@
-import { getConfig } from '#config/loader.js';
+import { Agent } from '@mastra/core/agent';
+import { Memory } from '@mastra/memory';
+import { getConfig } from '../../config/loader.js';
 import {
     createSubtask,
     updateTaskStatus,
     reportCompletion,
-} from '#tools/index.js';
-import { Agent } from '@mastra/core/agent';
-import { Memory } from '@mastra/memory';
+} from '../tools/index.js';
 import { createDiscoveryAgents } from './discovery.js';
 import { createImplementationAgents } from './implementation.js';
 

@@ -1,13 +1,8 @@
-import { getConfig } from '#config/loader.js';
-import {
-    readFile,
-    globFiles,
-    grepSearch,
-    gitStatus,
-    gitDiff,
-} from '#tools/index.js';
 import { Agent } from '@mastra/core/agent';
 import { Memory } from '@mastra/memory';
+import { getConfig } from '../../config/loader.js';
+import { gitStatus, gitDiff } from '../tools/index.js';
+import { createReadOnlyWorkspace } from '../workspace.js';
 
 export function createDiscoveryAgent(index: number): Agent {
     const config = getConfig();
@@ -31,7 +26,8 @@ Guidelines:
 - Highlight potential issues, patterns, and architectural decisions
 - Focus on what's relevant to the task at hand`,
         model: config.agents.discovery.model,
-        tools: { readFile, globFiles, grepSearch, gitStatus, gitDiff },
+        tools: { gitStatus, gitDiff },
+        workspace: createReadOnlyWorkspace('.'),
         memory: new Memory({
             options: {
                 lastMessages: 20,

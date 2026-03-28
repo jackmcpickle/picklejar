@@ -75,3 +75,7 @@ export function getActiveWorktrees(): WorktreeInfo[] {
 export function getWorktreeForTask(taskId: string): WorktreeInfo | undefined {
     return activeWorktrees.get(taskId);
 }
+
+export function _clearActiveWorktrees(): void {
+    activeWorktrees.clear();
+}

@@ -177,4 +177,175 @@ describe('server routes', () => {
             expect(worktrees).toEqual([]);
         });
     });
+
+    describe('route handler logic', () => {
+        function mockContext(
+            overrides: {
+                json?: () => Promise<unknown>;
+                param?: (key: string) => string | undefined;
+                get?: (key: string) => unknown;
+                signal?: AbortSignal;
+            } = {},
+        ) {
+            const responses: Array<{ body: unknown; status?: number }> = [];
+            return {
+                ctx: {
+                    req: {
+                        json: overrides.json ?? (() => Promise.resolve({})),
+                        param: overrides.param ?? (() => undefined),
+                        raw: {
+                            signal:
+                                overrides.signal ??
+                                new AbortController().signal,
+                        },
+                    },
+                    get: overrides.get ?? (() => undefined),
+                    json: (body: unknown, status?: number) => {
+                        responses.push({ body, status });
+                        return { body, status };
+                    },
+                },
+                responses,
+            };
+        }
+
+        describe('taskCreateRoute handler', () => {
+            it('creates task from body and returns 201', async () => {
+                const { ctx, responses } = mockContext({
+                    json: () =>
+                        Promise.resolve({
+                            title: 'handler test',
+                            description: 'desc',
+                        }),
+                });
+
+                await taskCreateRoute.handler(ctx as any);
+
+                expect(responses).toHaveLength(1);
+                expect(responses[0].status).toBe(201);
+                expect(responses[0].body).toMatchObject({
+                    title: 'handler test',
+                    status: 'pending',
+                    type: 'root',
+                });
+            });
+        });
+
+        describe('taskListRoute handler', () => {
+            it('returns tasks array with count', async () => {
+                submitRootTask('list-handler-test', '');
+                const { ctx, responses } = mockContext();
+
+                await taskListRoute.handler(ctx as any);
+
+                expect(responses).toHaveLength(1);
+                const body = responses[0].body as {
+                    tasks: unknown[];
+                    count: number;
+                };
+                expect(body.count).toBe(body.tasks.length);
+                expect(body.count).toBeGreaterThan(0);
+            });
+        });
+
+        describe('taskDetailRoute handler', () => {
+            it('returns task tree for valid ID', async () => {
+                const task = submitRootTask('detail-test', '');
+                const { ctx, responses } = mockContext({
+                    param: (key: string) =>
+                        key === 'id' ? task.id : undefined,
+                });
+
+                await taskDetailRoute.handler(ctx as any);
+
+                expect(responses).toHaveLength(1);
+                expect(responses[0].body).toMatchObject({
+                    id: task.id,
+                    title: 'detail-test',
+                    subtasks: [],
+                });
+            });
+
+            it('returns 404 for non-existent ID', async () => {
+                const { ctx, responses } = mockContext({
+                    param: () => 'task-99999',
+                });
+
+                await taskDetailRoute.handler(ctx as any);
+
+                expect(responses).toHaveLength(1);
+                expect(responses[0].status).toBe(404);
+            });
+        });
+
+        describe('healthRoute handler', () => {
+            it('returns status ok with uptime', async () => {
+                const { ctx, responses } = mockContext();
+
+                await healthRoute.handler(ctx as any);
+
+                expect(responses).toHaveLength(1);
+                const body = responses[0].body as {
+                    status: string;
+                    uptime: number;
+                };
+                expect(body.status).toBe('ok');
+                expect(body.uptime).toBeTypeOf('number');
+            });
+        });
+
+        describe('agentStatusRoute handler', () => {
+            it('returns worktrees array', async () => {
+                const { ctx, responses } = mockContext();
+
+                await agentStatusRoute.handler(ctx as any);
+
+                expect(responses).toHaveLength(1);
+                const body = responses[0].body as {
+                    worktrees: unknown[];
+                };
+                expect(body.worktrees).toBeInstanceOf(Array);
+            });
+        });
+
+        describe('taskStreamRoute handler', () => {
+            it('returns SSE response with init event for valid task', async () => {
+                const task = submitRootTask('stream-test', '');
+                const controller = new AbortController();
+                const { ctx } = mockContext({
+                    param: (key: string) =>
+                        key === 'id' ? task.id : undefined,
+                    signal: controller.signal,
+                });
+
+                const result = await taskStreamRoute.handler(ctx as any);
+
+                expect(result).toBeInstanceOf(Response);
+                const response = result as Response;
+                expect(response.headers.get('Content-Type')).toBe(
+                    'text/event-stream',
+                );
+
+                // Read the first chunk (init event)
+                const reader = response.body!.getReader();
+                const { value } = await reader.read();
+                const text = new TextDecoder().decode(value);
+                expect(text).toContain('"event":"init"');
+
+                controller.abort();
+                reader.releaseLock();
+            });
+
+            it('returns 404 for non-existent task', async () => {
+                const { ctx, responses } = mockContext({
+                    param: () => 'task-nonexistent',
+                });
+
+                await taskStreamRoute.handler(ctx as any);
+
+                expect(responses).toHaveLength(1);
+                expect(responses[0].status).toBe(404);
+            });
+        });
+    });
 });

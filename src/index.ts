@@ -2,9 +2,9 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { Mastra } from '@mastra/core';
 import type { Agent } from '@mastra/core/agent';
 import { LibSQLStore } from '@mastra/libsql';
-import { createCoordinator } from './agents/coordinator.js';
 import { loadConfig } from './config/loader.js';
 import type { PicklejarConfig } from './config/schema.js';
+import { createCoordinator } from './mastra/agents/coordinator.js';
 import { apiRoutes } from './server/routes.js';
 
 export function createPicklejar(configPath?: string): {

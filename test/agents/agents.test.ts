@@ -2,16 +2,16 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { createCoordinator } from '../../src/agents/coordinator.js';
+import { loadConfig, resetConfig } from '../../src/config/loader.js';
+import { createCoordinator } from '../../src/mastra/agents/coordinator.js';
 import {
     createDiscoveryAgent,
     createDiscoveryAgents,
-} from '../../src/agents/discovery.js';
+} from '../../src/mastra/agents/discovery.js';
 import {
     createImplementationAgent,
     createImplementationAgents,
-} from '../../src/agents/implementation.js';
-import { loadConfig, resetConfig } from '../../src/config/loader.js';
+} from '../../src/mastra/agents/implementation.js';
 
 const baseConfig = {
     agents: {
@@ -75,12 +75,9 @@ describe('discovery agents', () => {
         expect(agents[1].name).toBe('Discovery Agent 2');
     });
 
-    it('has read-only tools', () => {
+    it('has git read tools as custom tools', () => {
         const agent = createDiscoveryAgent(1);
         const tools = getToolNames(agent);
-        expect(tools).toContain('readFile');
-        expect(tools).toContain('globFiles');
-        expect(tools).toContain('grepSearch');
         expect(tools).toContain('gitStatus');
         expect(tools).toContain('gitDiff');
     });
@@ -88,17 +85,14 @@ describe('discovery agents', () => {
     it('does NOT have write tools', () => {
         const agent = createDiscoveryAgent(1);
         const tools = getToolNames(agent);
-        expect(tools).not.toContain('writeFile');
-        expect(tools).not.toContain('editFile');
-        expect(tools).not.toContain('executeCommand');
         expect(tools).not.toContain('gitCommit');
         expect(tools).not.toContain('gitBranch');
         expect(tools).not.toContain('gitWorktree');
     });
 
-    it('has exactly 5 tools', () => {
+    it('has exactly 2 custom tools (workspace provides the rest)', () => {
         const agent = createDiscoveryAgent(1);
-        expect(getToolNames(agent)).toHaveLength(5);
+        expect(getToolNames(agent)).toHaveLength(2);
     });
 });
 
@@ -135,30 +129,19 @@ describe('implementation agents', () => {
         expect(agents[2].name).toBe('Implementation Agent 3');
     });
 
-    it('has write tools', () => {
+    it('has git tools as custom tools', () => {
         const agent = createImplementationAgent(1);
         const tools = getToolNames(agent);
-        expect(tools).toContain('writeFile');
-        expect(tools).toContain('editFile');
-        expect(tools).toContain('executeCommand');
         expect(tools).toContain('gitCommit');
         expect(tools).toContain('gitBranch');
         expect(tools).toContain('gitWorktree');
-    });
-
-    it('also has read tools', () => {
-        const agent = createImplementationAgent(1);
-        const tools = getToolNames(agent);
-        expect(tools).toContain('readFile');
-        expect(tools).toContain('globFiles');
-        expect(tools).toContain('grepSearch');
         expect(tools).toContain('gitStatus');
         expect(tools).toContain('gitDiff');
     });
 
-    it('has exactly 11 tools', () => {
+    it('has exactly 5 custom tools (workspace provides the rest)', () => {
         const agent = createImplementationAgent(1);
-        expect(getToolNames(agent)).toHaveLength(11);
+        expect(getToolNames(agent)).toHaveLength(5);
     });
 });
 

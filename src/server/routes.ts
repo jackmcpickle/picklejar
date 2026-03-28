@@ -1,6 +1,6 @@
-import * as taskManager from '#tasks/manager.js';
-import { getActiveWorktrees } from '#worktree/manager.js';
 import { registerApiRoute } from '@mastra/core/server';
+import * as taskManager from '../tasks/manager.js';
+import { getActiveWorktrees } from '../worktree/manager.js';
 
 // Note: paths must NOT start with /api (reserved by Mastra)
 // These routes will be available at /tasks, /tasks/list, etc.

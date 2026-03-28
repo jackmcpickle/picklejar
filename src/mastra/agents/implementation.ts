@@ -1,19 +1,14 @@
-import { getConfig } from '#config/loader.js';
+import { Agent } from '@mastra/core/agent';
+import { Memory } from '@mastra/memory';
+import { getConfig } from '../../config/loader.js';
 import {
-    readFile,
-    writeFile,
-    editFile,
-    globFiles,
-    grepSearch,
-    executeCommand,
     gitCommit,
     gitBranch,
     gitWorktree,
     gitStatus,
     gitDiff,
-} from '#tools/index.js';
-import { Agent } from '@mastra/core/agent';
-import { Memory } from '@mastra/memory';
+} from '../tools/index.js';
+import { createFullWorkspace } from '../workspace.js';
 
 export function createImplementationAgent(index: number): Agent {
     const config = getConfig();
@@ -39,18 +34,13 @@ Guidelines:
 - Report what you've done and any issues encountered`,
         model: config.agents.implementation.model,
         tools: {
-            readFile,
-            writeFile,
-            editFile,
-            globFiles,
-            grepSearch,
-            executeCommand,
             gitCommit,
             gitBranch,
             gitWorktree,
             gitStatus,
             gitDiff,
         },
+        workspace: createFullWorkspace('.'),
         memory: new Memory({
             options: {
                 lastMessages: 30,

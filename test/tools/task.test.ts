@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import * as taskManager from '../../src/tasks/manager.js';
 import {
     createSubtask,
     updateTaskStatus,
     reportCompletion,
-} from '../../src/tools/task.js';
+} from '../../src/mastra/tools/task.js';
+import * as taskManager from '../../src/tasks/manager.js';
 
 let rootId: string;
 

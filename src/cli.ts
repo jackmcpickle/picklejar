@@ -22,23 +22,6 @@ program
             pc.bold(pc.green('\n🥒 Picklejar - AI Agent Orchestration\n')),
         );
 
-        // Check RTK availability
-        try {
-            await execa('rtk', ['--version']);
-            console.log(pc.dim('  RTK token optimizer: available'));
-        } catch {
-            console.log(
-                pc.yellow(
-                    '  RTK not found - shell outputs will not be optimized',
-                ),
-            );
-            console.log(
-                pc.dim(
-                    '  Install: brew install rtk  |  https://github.com/rtk-ai/rtk\n',
-                ),
-            );
-        }
-
         // Load config
         const { createPicklejar } = await import('./index.js');
         const { config } = createPicklejar(opts.config);
@@ -229,22 +212,6 @@ program
         if (!existsSync(mastraDir)) {
             mkdirSync(mastraDir, { recursive: true });
             console.log(pc.green('  Created .mastra/ directory'));
-        }
-
-        // Check RTK
-        try {
-            const { stdout } = await execa('rtk', ['--version']);
-            console.log(pc.green(`  RTK found: ${stdout.trim()}`));
-        } catch {
-            console.log(pc.yellow('\n  RTK (Rust Token Killer) not found'));
-            console.log(
-                pc.dim('  RTK reduces shell command token usage by 60-90%'),
-            );
-            console.log(
-                pc.dim(
-                    '  Install: brew install rtk  |  https://github.com/rtk-ai/rtk',
-                ),
-            );
         }
 
         console.log(pc.bold('\n  Next steps:'));
