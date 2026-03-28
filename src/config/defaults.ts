@@ -6,6 +6,10 @@ export const defaultConfig: PicklejarConfig = {
             model: 'anthropic/claude-opus-4-6',
             maxSteps: 50,
         },
+        planner: {
+            model: 'anthropic/claude-opus-4-6',
+            maxSteps: 30,
+        },
         discovery: {
             model: 'anthropic/claude-sonnet-4-6',
             count: 2,

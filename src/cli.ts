@@ -165,6 +165,201 @@ program
         }
     });
 
+// Plan commands
+const plan = program.command('plan').description('Product planning workflow');
+
+plan.command('start <idea>')
+    .description('Start a planning workflow for a product idea')
+    .option('-p, --port <number>', 'Server port', '4111')
+    .option('-c, --context <text>', 'Additional context')
+    .action(async (idea: string, opts: { port: string; context?: string }) => {
+        try {
+            const response = await fetch(
+                `http://localhost:${opts.port}/api/workflows/planning/start`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        inputData: { idea, context: opts.context },
+                    }),
+                },
+            );
+
+            if (!response.ok) {
+                console.error(
+                    pc.red(`Failed to start planning: ${response.statusText}`),
+                );
+                process.exit(1);
+            }
+
+            const result = (await response.json()) as {
+                runId: string;
+            };
+            console.log(pc.green(`Planning started: ${result.runId}`));
+            console.log(
+                pc.dim(`  Check status: picklejar plan status ${result.runId}`),
+            );
+        } catch {
+            console.error(
+                pc.red('Could not connect to server. Is it running?'),
+            );
+            process.exit(1);
+        }
+    });
+
+plan.command('status <runId>')
+    .description('Check planning workflow status')
+    .option('-p, --port <number>', 'Server port', '4111')
+    .action(async (runId: string, opts: { port: string }) => {
+        try {
+            const response = await fetch(
+                `http://localhost:${opts.port}/api/workflows/planning/runs/${runId}`,
+            );
+            if (!response.ok) throw new Error(response.statusText);
+
+            const result = (await response.json()) as {
+                status: string;
+                steps: Record<string, { status: string; output?: unknown }>;
+            };
+
+            console.log(pc.bold(`\nWorkflow: ${runId}`));
+            console.log(`  Status: ${result.status}`);
+
+            if (result.steps) {
+                console.log(pc.bold('\n  Steps:'));
+                for (const [name, step] of Object.entries(result.steps)) {
+                    const color =
+                        step.status === 'success'
+                            ? pc.green
+                            : step.status === 'failed'
+                              ? pc.red
+                              : step.status === 'suspended'
+                                ? pc.yellow
+                                : pc.dim;
+                    console.log(`    ${color(`[${step.status}]`)} ${name}`);
+                }
+            }
+            console.log();
+        } catch {
+            console.error(pc.red('Could not fetch workflow status.'));
+            process.exit(1);
+        }
+    });
+
+plan.command('approve <runId>')
+    .description('Approve current suspended step')
+    .option('-p, --port <number>', 'Server port', '4111')
+    .action(async (runId: string, opts: { port: string }) => {
+        try {
+            const response = await fetch(
+                `http://localhost:${opts.port}/api/workflows/planning/runs/${runId}/resume`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        resumeData: { approved: true },
+                    }),
+                },
+            );
+
+            if (!response.ok) {
+                console.error(
+                    pc.red(`Failed to approve: ${response.statusText}`),
+                );
+                process.exit(1);
+            }
+
+            console.log(pc.green('Approved. Workflow resuming...'));
+        } catch {
+            console.error(pc.red('Could not connect to server.'));
+            process.exit(1);
+        }
+    });
+
+plan.command('reject <runId>')
+    .description('Reject current step with feedback')
+    .option('-p, --port <number>', 'Server port', '4111')
+    .requiredOption('-f, --feedback <text>', 'Feedback for revision')
+    .action(async (runId: string, opts: { port: string; feedback: string }) => {
+        try {
+            const response = await fetch(
+                `http://localhost:${opts.port}/api/workflows/planning/runs/${runId}/resume`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        resumeData: {
+                            approved: false,
+                            feedback: opts.feedback,
+                        },
+                    }),
+                },
+            );
+
+            if (!response.ok) {
+                console.error(
+                    pc.red(`Failed to reject: ${response.statusText}`),
+                );
+                process.exit(1);
+            }
+
+            console.log(
+                pc.yellow('Rejected with feedback. Workflow will revise...'),
+            );
+        } catch {
+            console.error(pc.red('Could not connect to server.'));
+            process.exit(1);
+        }
+    });
+
+plan.command('list')
+    .description('List all planning workflow runs')
+    .option('-p, --port <number>', 'Server port', '4111')
+    .action(async (opts: { port: string }) => {
+        try {
+            const response = await fetch(
+                `http://localhost:${opts.port}/api/workflows/planning/runs`,
+            );
+            if (!response.ok) throw new Error(response.statusText);
+
+            const { runs } = (await response.json()) as {
+                runs: Array<{
+                    runId: string;
+                    status: string;
+                    createdAt: string;
+                }>;
+            };
+
+            if (!runs || runs.length === 0) {
+                console.log(
+                    pc.dim(
+                        'No planning runs yet. Start one with: picklejar plan start "your idea"',
+                    ),
+                );
+                return;
+            }
+
+            console.log(pc.bold('\nPlanning Runs:\n'));
+            for (const run of runs) {
+                const color =
+                    run.status === 'success'
+                        ? pc.green
+                        : run.status === 'suspended'
+                          ? pc.yellow
+                          : run.status === 'failed'
+                            ? pc.red
+                            : pc.dim;
+                console.log(`  ${run.runId} ${color(`[${run.status}]`)}`);
+            }
+            console.log();
+        } catch {
+            console.error(pc.red('Could not connect to server.'));
+            process.exit(1);
+        }
+    });
+
 program
     .command('init')
     .description('Initialize a new picklejar project')

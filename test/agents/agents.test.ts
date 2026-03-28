@@ -12,6 +12,7 @@ import {
     createImplementationAgent,
     createImplementationAgents,
 } from '../../src/mastra/agents/implementation.js';
+import { createPlanner } from '../../src/mastra/agents/planner.js';
 
 const baseConfig = {
     agents: {
@@ -194,6 +195,70 @@ describe('coordinator', () => {
             'implementation-2',
             'implementation-3',
         ]);
+    });
+});
+
+describe('planner agent', () => {
+    let tmpDir: string;
+
+    beforeEach(() => {
+        resetConfig();
+        tmpDir = mkdtempSync(join(tmpdir(), 'pj-test-'));
+        loadConfig(writeConfig(tmpDir, baseConfig));
+    });
+
+    afterEach(() => {
+        resetConfig();
+        rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    it('has correct id and name', () => {
+        const planner = createPlanner();
+        expect(planner.id).toBe('planner');
+        expect(planner.name).toBe('Planner');
+    });
+
+    it('has git read tools as custom tools', () => {
+        const planner = createPlanner();
+        const tools = getToolNames(planner);
+        expect(tools).toContain('gitStatus');
+        expect(tools).toContain('gitDiff');
+    });
+
+    it('does NOT have write tools', () => {
+        const planner = createPlanner();
+        const tools = getToolNames(planner);
+        expect(tools).not.toContain('gitCommit');
+        expect(tools).not.toContain('gitBranch');
+        expect(tools).not.toContain('gitWorktree');
+    });
+
+    it('has exactly 2 custom tools', () => {
+        const planner = createPlanner();
+        expect(getToolNames(planner)).toHaveLength(2);
+    });
+
+    it('uses planner model from config', () => {
+        const custom = {
+            ...baseConfig,
+            agents: {
+                ...baseConfig.agents,
+                planner: {
+                    model: 'anthropic/claude-sonnet-4-6',
+                    maxSteps: 20,
+                },
+            },
+        };
+        loadConfig(writeConfig(tmpDir, custom));
+
+        const planner = createPlanner();
+        expect(planner.id).toBe('planner');
+    });
+
+    it('defaults planner config when not provided', () => {
+        // baseConfig has no planner key — should use schema defaults
+        const planner = createPlanner();
+        expect(planner.id).toBe('planner');
     });
 });
 

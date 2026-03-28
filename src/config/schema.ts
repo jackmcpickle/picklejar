@@ -29,6 +29,14 @@ export const picklejarConfigSchema = z.object({
     $schema: z.string().optional(),
     agents: z.object({
         coordinator: agentConfigSchema,
+        planner: agentConfigSchema
+            .extend({
+                maxSteps: z.number().int().min(1).max(100).default(30),
+            })
+            .default({
+                model: 'anthropic/claude-opus-4-6',
+                maxSteps: 30,
+            }),
         discovery: discoveryConfigSchema,
         implementation: implementationConfigSchema,
     }),

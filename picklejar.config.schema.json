@@ -25,6 +25,23 @@
                     },
                     "required": ["model"]
                 },
+                "planner": {
+                    "type": "object",
+                    "properties": {
+                        "model": {
+                            "type": "string",
+                            "description": "Model for spec and PRD generation",
+                            "default": "anthropic/claude-opus-4-6"
+                        },
+                        "maxSteps": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100,
+                            "default": 30
+                        }
+                    },
+                    "required": ["model"]
+                },
                 "discovery": {
                     "type": "object",
                     "properties": {
