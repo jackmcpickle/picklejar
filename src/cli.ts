@@ -65,7 +65,7 @@ program
             pc.cyan(`  Swagger: http://localhost:${opts.port}/swagger-ui`),
         );
         console.log(
-            pc.cyan(`  Tasks:   http://localhost:${opts.port}/api/tasks`),
+            pc.cyan(`  Tasks:   http://localhost:${opts.port}/tasks/list`),
         );
         console.log();
 
@@ -91,7 +91,7 @@ program
     .description('Submit a coding task to the coordinator')
     .option('-p, --port <number>', 'Server port', '4111')
     .action(async (description: string, opts: { port: string }) => {
-        const url = `http://localhost:${opts.port}/api/tasks`;
+        const url = `http://localhost:${opts.port}/tasks`;
 
         try {
             const response = await fetch(url, {
@@ -117,7 +117,7 @@ program
             console.log(pc.dim(`  Status: ${task.status}`));
             console.log(
                 pc.dim(
-                    `\n  Stream progress: curl http://localhost:${opts.port}/api/tasks/${task.id}/stream`,
+                    `\n  Stream progress: curl http://localhost:${opts.port}/tasks/${task.id}/stream`,
                 ),
             );
         } catch {
@@ -136,7 +136,7 @@ program
     .action(async (opts: { port: string }) => {
         try {
             const response = await fetch(
-                `http://localhost:${opts.port}/api/tasks`,
+                `http://localhost:${opts.port}/tasks/list`,
             );
             if (!response.ok) throw new Error(response.statusText);
 

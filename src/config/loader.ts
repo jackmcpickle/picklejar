@@ -34,3 +34,8 @@ export function getConfig(): PicklejarConfig {
     }
     return _config;
 }
+
+/** Reset config state (for testing) */
+export function resetConfig(): void {
+    _config = null;
+}

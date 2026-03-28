@@ -1,3 +1,4 @@
+import { existsSync, mkdirSync } from 'node:fs';
 import { Mastra } from '@mastra/core';
 import type { Agent } from '@mastra/core/agent';
 import { LibSQLStore } from '@mastra/libsql';
@@ -28,6 +29,10 @@ export function createPicklejar(configPath?: string): {
         agents[agent.name] = agent;
     }
 
+    if (!existsSync('.mastra')) {
+        mkdirSync('.mastra', { recursive: true });
+    }
+
     const mastra = new Mastra({
         agents,
         storage: new LibSQLStore({
@@ -52,5 +57,5 @@ export function createPicklejar(configPath?: string): {
     };
 }
 
-export { loadConfig, getConfig } from './config/loader.js';
+export { loadConfig, getConfig, resetConfig } from './config/loader.js';
 export type { PicklejarConfig } from './config/schema.js';

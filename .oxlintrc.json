@@ -17,6 +17,7 @@
         ],
         "no-undefined": "off",
         "import/no-default-export": "warn",
+        "import/no-relative-parent-imports": "off",
         "import/max-dependencies": [
             "error",
             {
@@ -103,5 +104,12 @@
         "jsx-a11y",
         "react-perf"
     ],
-    "ignorePatterns": ["node_modules/", "build/", "dist/", "tsdown.config.ts"]
+    "ignorePatterns": [
+        "node_modules/",
+        "build/",
+        "dist/",
+        "tsdown.config.ts",
+        "vitest.config.ts",
+        "test/"
+    ]
 }
